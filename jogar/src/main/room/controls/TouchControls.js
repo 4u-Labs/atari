@@ -1,0 +1,1 @@
+jt.TouchControls = { buttons: [ "T_B", "T_A" ] };
