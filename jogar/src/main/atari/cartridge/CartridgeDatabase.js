@@ -1,0 +1,1 @@
+jt.CartridgeDatabase = { uncompress: function () { jt.CartridgeDatabase = JSON.parse(jt.Util.uncompressStringBase64ToString(this.data)); }, data: "pL15kxvZdT34VWD9JkatGFHx9sV/zVt7E6WeJt3yyOFwgFUgCbMI0KiqZlO/mO8+5yRQyMRWVbQd6lY3LZzMfMu959x3733/+3e/Lja3y/Xqd/+shPRCS/HH3wkXbK4ilxy9La11L4z0JiZrrEkm/O6f };
