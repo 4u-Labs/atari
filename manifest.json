@@ -1,0 +1,17 @@
+{
+  "name": "Atari 2600 Online — Clássicos Imortais",
+  "short_name": "Atari 2600",
+  "start_url": "index.php",
+  "display": "standalone",
+  "background_color": "#0f0714",
+  "theme_color": "#ff79c6",
+  "description": "Reviva mais de 2000 jogos clássicos do Atari 2600 diretamente no seu navegador com emulação retro em HTML5.",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
