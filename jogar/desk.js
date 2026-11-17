@@ -681,9 +681,22 @@
     cx40Stage.addEventListener('pointercancel', endDrag);
   }
 
-  // Bilíngue PT / EN
+  // Bilíngue PT / EN completo (toda a UI, modais, tooltips e manual)
   function applyLang() {
+    document.documentElement.lang = lang === 'en' ? 'en' : 'pt-BR';
+    document.title = tr(
+      'Atari 2600 VCS — Bancada Retrô com 2.146 Jogos | 4u-Labs',
+      'Atari 2600 VCS — Retro Desk with 2,146 Games | 4u-Labs'
+    );
     el('btn-lang').textContent = lang === 'en' ? '🇺🇸 EN' : '🇧🇷 PT';
+
+    document.querySelectorAll('[data-pt][data-en]').forEach((node) => {
+      node.textContent = lang === 'en' ? node.dataset.en : node.dataset.pt;
+    });
+    document.querySelectorAll('[data-pt-title][data-en-title]').forEach((node) => {
+      node.title = lang === 'en' ? node.dataset.enTitle : node.dataset.ptTitle;
+    });
+
     if (el('pause-state')) el('pause-state').textContent = paused ? tr('Pausado', 'Paused') : tr('Rodando', 'Running');
     if (el('rack-title')) el('rack-title').textContent = tr('CARTUCHOS ATARI 2600', 'ATARI 2600 CARTRIDGES');
     if (searchInput) searchInput.placeholder = tr('🔍 Buscar nos 2.146 jogos...', '🔍 Search 2,146 games...');
@@ -696,7 +709,38 @@
     if (el('pill-recent')) el('pill-recent').textContent = tr('🕘 Recentes', '🕘 Recent');
     if (el('btn-open-cart-catalog')) el('btn-open-cart-catalog').textContent = tr('🗂️ Caixa', '🗂️ Box');
     if (el('sw-tv-state')) el('sw-tv-state').textContent = tvColorMode ? tr('COR', 'COLOR') : tr('P&B', 'B/W');
+
+    const manualBody = el('manual-body');
+    if (manualBody) {
+      manualBody.innerHTML = lang === 'en'
+        ? `<h3 style="color:#fdba74;margin-bottom:6px;">🕹️ Woody Console Switches</h3>
+           <ul style="padding-left:18px;margin-bottom:14px;">
+             <li><strong>GAME RESET (F1):</strong> starts most games (such as <em>River Raid</em>, <em>Enduro</em>, <em>Pitfall!</em>) or restarts the match.</li>
+             <li><strong>GAME SELECT (F2):</strong> chooses the game mode (1 or 2 players, speed, variations such as the 112 modes of <em>Space Invaders</em>).</li>
+             <li><strong>TV TYPE:</strong> toggles Color vs Black &amp; White video (some games such as <em>Starmaster</em> use this switch for the tactical map!).</li>
+             <li><strong>POWER:</strong> turns the Atari 2600 console on or off (always powers on automatically when inserting a cartridge).</li>
+           </ul>
+           <h3 style="color:#fdba74;margin-bottom:6px;">🎯 Paddles, Save States &amp; NetPlay</h3>
+           <ul style="padding-left:18px;">
+             <li>Hover over the bottom of the TV screen to reveal Javatari's bar: <strong>Save/Load State</strong>, <strong>Paddle</strong> mode (for <em>Kaboom!</em> &amp; <em>Breakout</em>) and <strong>P2P NetPlay</strong>!</li>
+             <li>You can also click <strong>📁 Open .BIN</strong> or drag &amp; drop any <code>.bin</code>/<code>.a26</code> cartridge straight onto the TV.</li>
+           </ul>`
+        : `<h3 style="color:#fdba74;margin-bottom:6px;">🕹️ Chaves do Console Woody</h3>
+           <ul style="padding-left:18px;margin-bottom:14px;">
+             <li><strong>GAME RESET (F1):</strong> inicia a maioria dos jogos (como <em>River Raid</em>, <em>Enduro</em>, <em>Pitfall!</em>) ou reinicia a partida.</li>
+             <li><strong>GAME SELECT (F2):</strong> escolhe o modo de jogo (1 ou 2 jogadores, velocidade, variações como os 112 modos de <em>Space Invaders</em>).</li>
+             <li><strong>TV TYPE:</strong> alterna entre vídeo Colorido e Preto &amp; Branco (alguns jogos como <em>Starmaster</em> usam essa chave para mapa!).</li>
+             <li><strong>POWER:</strong> liga ou desliga o console Atari 2600 (a chave sempre acende ao carregar um novo cartucho).</li>
+           </ul>
+           <h3 style="color:#fdba74;margin-bottom:6px;">🎯 Paddles, Save States &amp; NetPlay</h3>
+           <ul style="padding-left:18px;">
+             <li>Passe o mouse na parte inferior da tela da TV para revelar a barra avançada do Javatari: <strong>Save/Load State</strong>, troca de <strong>Paddle</strong> (para <em>Kaboom!</em> e <em>Breakout</em>) e <strong>NetPlay P2P</strong>!</li>
+             <li>Você também pode clicar em <strong>📁 Abrir .BIN</strong> ou arrastar qualquer cartucho <code>.bin</code>/<code>.a26</code> direto para a TV.</li>
+           </ul>`;
+    }
+
     renderRack();
+    if (catalogModal && !catalogModal.classList.contains('hidden')) renderCatalogModal();
   }
 
   el('btn-lang')?.addEventListener('click', () => {

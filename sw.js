@@ -1,4 +1,4 @@
-const CACHE_NAME = 'atari-2600-v2.3';
+const CACHE_NAME = 'atari-2600-v2.4';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
