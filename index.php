@@ -429,7 +429,14 @@ header("Expires: 0");
     (() => {
       'use strict';
       const STORAGE_LANG = 'atari2600_lang_v1';
-      let lang = localStorage.getItem(STORAGE_LANG) === 'en' ? 'en' : 'pt';
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      if (urlLang === 'en' || urlLang === 'pt') {
+        try { localStorage.setItem(STORAGE_LANG, urlLang); } catch {}
+      }
+      const savedLang = localStorage.getItem(STORAGE_LANG);
+      let lang = savedLang === 'en' || savedLang === 'pt'
+        ? savedLang
+        : ((navigator.language || 'pt').toLowerCase().startsWith('pt') ? 'pt' : 'en');
       let allRoms = [];
 
       const yearEl = document.getElementById('current-year');

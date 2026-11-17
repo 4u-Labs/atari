@@ -52,7 +52,14 @@
   let activeFile = 'Pitfall.bin';
   let activeCategory = 'all'; // 'all' | 'classics' | 'favs' | 'recent'
   let searchQuery = '';
-  let lang = localStorage.getItem(STORAGE_LANG) === 'en' ? 'en' : 'pt';
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang === 'en' || urlLang === 'pt') {
+    try { localStorage.setItem(STORAGE_LANG, urlLang); } catch {}
+  }
+  const savedLang = localStorage.getItem(STORAGE_LANG);
+  let lang = savedLang === 'en' || savedLang === 'pt'
+    ? savedLang
+    : ((navigator.language || 'pt').toLowerCase().startsWith('pt') ? 'pt' : 'en');
   let favs = new Set(JSON.parse(localStorage.getItem(STORAGE_FAV) || '[]'));
   let recent = JSON.parse(localStorage.getItem(STORAGE_RECENT) || '[]');
 
