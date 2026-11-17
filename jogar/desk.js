@@ -928,7 +928,15 @@
     const params = new URLSearchParams(window.location.search);
     const paramUrl = params.get('CARTRIDGE_URL') || params.get('AUTODETECT_URL');
     let cleanParamName = paramUrl ? decodeURIComponent(paramUrl.split('/').pop() || '') : '';
-    const STALE_NTSC_UPGRADE = { 'Popeye.bin': 'Popeye 2.bin', 'Joust.bin': 'Joust 2.bin', 'Frostbite.bin': 'Frostbite 5.bin' };
+    const STALE_NTSC_UPGRADE = {
+      'Popeye.bin': 'Popeye 2.bin',
+      'Joust.bin': 'Joust 2.bin',
+      'Frostbite.bin': 'Frostbite 5.bin',
+      'Bridge.bin': 'Bridge 1.bin',
+      'Grand Prix.bin': 'Grand Prix 1.bin',
+      'E.T. - The Extra-Ter.bin': 'E.T. - The Extra-T 1.bin',
+      'X-Man.bin': 'X-Man 1.bin'
+    };
     if (cleanParamName) {
       updateCartridgeVisuals(STALE_NTSC_UPGRADE[cleanParamName] || cleanParamName || 'Pitfall.bin');
       recordRecent(STALE_NTSC_UPGRADE[cleanParamName] || cleanParamName);
