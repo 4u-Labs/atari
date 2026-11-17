@@ -4,41 +4,41 @@
 
   const CLASSICS = [
     { file: 'Pitfall.bin', title: 'PITFALL!', maker: 'Activision · 1982', color: '#16a34a', pt: 'Salte cipós, jacarés e barris na selva em 20 minutos.', en: 'Swing over vines, crocodiles and rolling logs.' },
-    { file: 'Pitfall II - Lost Ca.bin', title: 'PITFALL II', maker: 'Activision · 1984', color: '#059669', pt: 'Cavernas gigantes, trilha sonora épica e mapa vertical.', en: 'Huge caverns with iconic soundtrack and vertical map.' },
+    { file: 'Pitfall II - Lost 1.bin', title: 'PITFALL II', maker: 'Activision · 1984', color: '#059669', pt: 'Cavernas gigantes, trilha sonora épica e mapa vertical.', en: 'Huge caverns with iconic soundtrack and vertical map.' },
     { file: 'River Raid.bin', title: 'RIVER RAID', maker: 'Activision · 1982', color: '#2563eb', pt: 'Pilote o jato pelo rio destruindo pontes e reabastecendo.', en: 'Fly down the river destroying bridges and refueling.' },
     { file: 'Enduro.bin', title: 'ENDURO', maker: 'Activision · 1983', color: '#dc2626', pt: 'Ultrapasse carros dia, noite, neblina e neve na corrida.', en: 'Pass cars through day, night, fog and snow.' },
-    { file: 'Frostbite.bin', title: 'FROSTBITE', maker: 'Activision · 1983', color: '#0284c7', pt: 'Pule sobre blocos de gelo para construir seu iglu antes do frio.', en: 'Hop on ice floes to build your igloo before freeze-up.' },
+    { file: 'Frostbite 5.bin', title: 'FROSTBITE', maker: 'Activision · 1983', color: '#0284c7', pt: 'Pule sobre blocos de gelo para construir seu iglu antes do frio.', en: 'Hop on ice floes to build your igloo before freeze-up.' },
     { file: 'H.E.R.O.bin', title: 'H.E.R.O.', maker: 'Activision · 1984', color: '#ea580c', pt: 'Resgate mineiros com jetpack, laser e dinamite nas cavernas.', en: 'Rescue trapped miners using jetpack, laser and dynamite.' },
     { file: 'Keystone Kapers.bin', title: 'KEYSTONE KAPERS', maker: 'Activision · 1983', color: '#4f46e5', pt: 'Persiga o ladrão Harry Hooligan pelos andares do shopping.', en: 'Chase burglar Harry Hooligan across department store floors.' },
-    { file: 'MegaMania.bin', title: 'MEGAMANIA', maker: 'Activision · 1982', color: '#7c3aed', pt: 'Defenda a galáxia contra hambúrgueres, ferros e pneus.', en: 'Space nightmare shooter against hamburgers and tires.' },
+    { file: 'MegaMania - A Space.bin', title: 'MEGAMANIA', maker: 'Activision · 1982', color: '#7c3aed', pt: 'Defenda a galáxia contra hambúrgueres, ferros e pneus.', en: 'Space nightmare shooter against hamburgers and tires.' },
     { file: 'Seaquest.bin', title: 'SEAQUEST', maker: 'Activision · 1983', color: '#0d9488', pt: 'Submarino resgatando mergulhadores enquanto evita tubarões.', en: 'Submarine rescue mission dodging sharks and torpedoes.' },
     { file: 'Chopper Command.bin', title: 'CHOPPER COMMAND', maker: 'Activision · 1982', color: '#b45309', pt: 'Proteja o comboio no deserto com helicóptero e radar.', en: 'Protect the desert convoy with radar-guided chopper.' },
-    { file: 'Kaboom!.bin', title: 'KABOOM!', maker: 'Activision · 1981', color: '#e11d48', pt: 'Pegue as bombas nos baldes (modo Paddle/Mouse no menu!).', en: 'Catch falling bombs with buckets (use Paddle/Mouse mode!).' },
+    { file: 'Kaboom! 1.bin', title: 'KABOOM!', maker: 'Activision · 1981', color: '#e11d48', pt: 'Pegue as bombas nos baldes (modo Paddle/Mouse automático!).', en: 'Catch falling bombs with buckets (auto Paddle/Mouse mode!).' },
     { file: 'Space Invaders.bin', title: 'SPACE INVADERS', maker: 'Atari · 1980', color: '#9333ea', pt: 'O clássico arcade dos invasores espaciais com 112 variações.', en: 'Classic alien shooter with 112 game variations.' },
-    { file: 'Ms. Pac-Man.bin', title: 'MS. PAC-MAN', maker: 'Atari · 1982', color: '#db2777', pt: 'Melhor versão de Pac-Man no Atari 2600 com 4 labirintos.', en: 'Best Atari 2600 maze chase with 4 changing mazes.' },
+    { file: 'Ms. Pac-Man 1.bin', title: 'MS. PAC-MAN', maker: 'Atari · 1982', color: '#db2777', pt: 'Melhor versão de Pac-Man no Atari 2600 com 4 labirintos.', en: 'Best Atari 2600 maze chase with 4 changing mazes.' },
     { file: 'Jr. Pac-Man.bin', title: 'JR. PAC-MAN', maker: 'Atari · 1986', color: '#ec4899', pt: 'Labirintos largos com rolagem horizontal e fantasmas rápidos.', en: 'Wide scrolling mazes and fast ghost chases.' },
     { file: 'Asteroids.bin', title: 'ASTEROIDS', maker: 'Atari · 1981', color: '#1d4ed8', pt: 'Destrua asteroides e naves inimigas no espaço sideral.', en: 'Blast spinning asteroids and flying saucers.' },
-    { file: 'Missile Command.bin', title: 'MISSILE COMMAND', maker: 'Atari · 1981', color: '#b91c1c', pt: 'Proteja suas cidades interceptando mísseis balísticos.', en: 'Defend six cities from incoming ICBM waves.' },
-    { file: "Yars' Revenge.bin", title: "YARS' REVENGE", maker: 'Atari · 1982', color: '#d97706', pt: 'Clássico original do 2600 com o canhão Zorlon contra o Qotile.', en: 'Original 2600 hit: charge the Zorlon Cannon vs Qotile.' },
+    { file: 'Missile Command 2.bin', title: 'MISSILE COMMAND', maker: 'Atari · 1981', color: '#b91c1c', pt: 'Proteja suas cidades interceptando mísseis balísticos.', en: 'Defend six cities from incoming ICBM waves.' },
+    { file: "Yars' Revenge 2.bin", title: "YARS' REVENGE", maker: 'Atari · 1982', color: '#d97706', pt: 'Clássico original do 2600 com o canhão Zorlon contra o Qotile.', en: 'Original 2600 hit: charge the Zorlon Cannon vs Qotile.' },
     { file: 'Adventure.bin', title: 'ADVENTURE', maker: 'Atari · 1980', color: '#ca8a04', pt: 'Primeiro jogo de ação/aventura com dragões e chaves mágicas.', en: 'Pioneering action-adventure with dragons and secret room.' },
     { file: "Montezuma's Revenge.bin", title: "MONTEZUMA'S REVENGE", maker: 'Parker Bros · 1984', color: '#f59e0b', pt: 'Explore a pirâmide asteca coletando joias e chaves.', en: 'Explore the Aztec temple for gems, keys and torches.' },
     { file: 'Berzerk.bin', title: 'BERZERK', maker: 'Atari · 1982', color: '#dc2626', pt: 'Fuja dos robôs atiradores e do Evil Otto nos corredores.', en: 'Blast robots through electrified mazes before Evil Otto.' },
-    { file: 'Centipede.bin', title: 'CENTIPEDE', maker: 'Atari · 1982', color: '#059669', pt: 'Atire na centopeia e nos cogumelos no jardim neon.', en: 'Arcade insect shooter through mushroom fields.' },
-    { file: 'Combat.bin', title: 'COMBAT', maker: 'Atari · 1977', color: '#7c2d12', pt: 'Duelos de tanques, biplanos e jatos (2 jogadores).', en: 'Classic 2-player tank, biplane and jet battles.' },
+    { file: 'Centipede 3.bin', title: 'CENTIPEDE', maker: 'Atari · 1982', color: '#059669', pt: 'Atire na centopeia e nos cogumelos no jardim neon.', en: 'Arcade insect shooter through mushroom fields.' },
+    { file: 'Combat - Tank-Plus.bin', title: 'COMBAT', maker: 'Atari · 1977', color: '#7c2d12', pt: 'Duelos de tanques, biplanos e jatos (2 jogadores).', en: 'Classic 2-player tank, biplane and jet battles.' },
     { file: 'Demon Attack.bin', title: 'DEMON ATTACK', maker: 'Imagic · 1982', color: '#991b1b', pt: 'Ondas de criaturas espaciais coloridas com tiro rápido.', en: 'Colorful waves of splitting cosmic demons.' },
-    { file: 'Defender.bin', title: 'DEFENDER', maker: 'Atari · 1982', color: '#4338ca', pt: 'Nave veloz com scanner salvando humanoides de alienígenas.', en: 'High-speed arcade shooter rescuing humanoids.' },
+    { file: 'Defender 2.bin', title: 'DEFENDER', maker: 'Atari · 1982', color: '#4338ca', pt: 'Nave veloz com scanner salvando humanoides de alienígenas.', en: 'High-speed arcade shooter rescuing humanoids.' },
     { file: 'Donkey Kong.bin', title: 'DONKEY KONG', maker: 'Coleco · 1982', color: '#c2410c', pt: 'Salte os barris e suba as vigas para resgatar a donzela.', en: 'Dodge barrels and climb girders to save the princess.' },
-    { file: 'Frogger.bin', title: 'FROGGER', maker: 'Parker Bros · 1982', color: '#15803d', pt: 'Atravesse o trânsito e os troncos do rio sem cair.', en: 'Cross busy highways and flowing river logs.' },
-    { file: 'Galaxian.bin', title: 'GALAXIAN', maker: 'Atari · 1983', color: '#1e40af', pt: 'Combate espacial clássico contra enxames em formação.', en: 'Defeat diving alien formations in space.' },
-    { file: 'Jungle Hunt.bin', title: 'JUNGLE HUNT', maker: 'Atari · 1983', color: '#166534', pt: 'Cipós, crocodilos no rio, pedras gigantes e canibais.', en: 'Four-stage arcade rescue through jungle hazards.' },
-    { file: 'Moon Patrol.bin', title: 'MOON PATROL', maker: 'Atari · 1983', color: '#0369a1', pt: 'Salte crateras lunares com o buggy enquanto abate OVNIs.', en: 'Drive the moon buggy jumping craters and shooting UFOs.' },
+    { file: 'Frogger 1.bin', title: 'FROGGER', maker: 'Parker Bros · 1982', color: '#15803d', pt: 'Atravesse o trânsito e os troncos do rio sem cair.', en: 'Cross busy highways and flowing river logs.' },
+    { file: 'Galaxian 2.bin', title: 'GALAXIAN', maker: 'Atari · 1983', color: '#1e40af', pt: 'Combate espacial clássico contra enxames em formação.', en: 'Defeat diving alien formations in space.' },
+    { file: 'Jungle Hunt 2.bin', title: 'JUNGLE HUNT', maker: 'Atari · 1983', color: '#166534', pt: 'Cipós, crocodilos no rio, pedras gigantes e canibais.', en: 'Four-stage arcade rescue through jungle hazards.' },
+    { file: 'Moon Patrol 5.bin', title: 'MOON PATROL', maker: 'Atari · 1983', color: '#0369a1', pt: 'Salte crateras lunares com o buggy enquanto abate OVNIs.', en: 'Drive the moon buggy jumping craters and shooting UFOs.' },
     { file: 'Pole Position.bin', title: 'POLE POSITION', maker: 'Atari · 1983', color: '#b91c1c', pt: 'Fórmula 1 em alta velocidade no circuito Fuji Speedway.', en: 'High-speed F1 racing on the Fuji Speedway.' },
-    { file: 'Q-bert.bin', title: 'Q*BERT', maker: 'Parker Bros · 1983', color: '#d97706', pt: 'Pule na pirâmide isométrica trocando a cor dos cubos.', en: 'Hop diagonally across the pyramid changing cube colors.' },
-    { file: 'Solaris.bin', title: 'SOLARIS', maker: 'Atari · 1986', color: '#0284c7', pt: 'Gráficos incríveis no limite do hardware em combate estelar.', en: 'Stunning late-era 2600 starship adventure.' },
-    { file: 'Popeye.bin', title: 'POPEYE', maker: 'Parker Bros · 1983', color: '#0369a1', pt: 'Pegue os corações da Olívia Palito desviando do Brutus.', en: 'Catch Olive Oyl hearts while dodging Bluto.' },
+    { file: 'Q-bert 1.bin', title: 'Q*BERT', maker: 'Atari · 1987', color: '#d97706', pt: 'Pule na pirâmide isométrica trocando a cor dos cubos.', en: 'Hop diagonally across the pyramid changing cube colors.' },
+    { file: 'Solaris 2.bin', title: 'SOLARIS', maker: 'Atari · 1986', color: '#0284c7', pt: 'Gráficos incríveis no limite do hardware em combate estelar.', en: 'Stunning late-era 2600 starship adventure.' },
+    { file: 'Popeye 2.bin', title: 'POPEYE', maker: 'Parker Bros · 1983', color: '#0369a1', pt: 'Pegue os corações da Olívia Palito desviando do Brutus.', en: 'Catch Olive Oyl hearts while dodging Bluto.' },
     { file: 'Mario Bros.bin', title: 'MARIO BROS.', maker: 'Atari · 1983', color: '#dc2626', pt: 'Derrube tartarugas e caranguejos nos encanamentos.', en: 'Flip sewer critters from below across pipes.' },
     { file: 'Dig Dug.bin', title: 'DIG DUG', maker: 'Atari · 1983', color: '#0f766e', pt: 'Escave túneis subterrâneos e infle monstros com a bomba.', en: 'Tunnel underground and inflate Pookas and Fygars.' },
-    { file: 'Joust.bin', title: 'JOUST', maker: 'Atari · 1983', color: '#ca8a04', pt: 'Bata asas sobre o avestruz e derrote cavaleiros por cima.', en: 'Flap your ostrich lance above rival knights.' },
+    { file: 'Joust 2.bin', title: 'JOUST', maker: 'Atari · 1983', color: '#ca8a04', pt: 'Bata asas sobre o avestruz e derrote cavaleiros por cima.', en: 'Flap your ostrich lance above rival knights.' },
     { file: 'BASIC Programming.bin', title: 'BASIC PROGRAMMING', maker: 'Atari · 1979', color: '#475569', pt: 'Cartucho oficial para programar códigos simples direto no Atari!', en: 'Official Atari cartridge to code simple programs.' },
   ];
 
@@ -279,6 +279,21 @@
   }
 
   // Carregamento instantâneo sem recarregar a página via Javatari.room.fileLoader
+  function syncPowerUI(isOn) {
+    powerOn = !!isOn;
+    el('sw-power')?.classList.toggle('up', powerOn);
+    tvPowerLed?.classList.toggle('on', powerOn);
+    if (el('sw-power-state')) el('sw-power-state').textContent = powerOn ? 'ON' : 'OFF';
+  }
+
+  function syncConsoleUiFromEmulator() {
+    const c = window.Javatari?.room?.console;
+    if (!c) return;
+    if (typeof c.powerIsOn === 'boolean' && c.powerIsOn !== powerOn) {
+      syncPowerUI(c.powerIsOn);
+    }
+  }
+
   async function loadCartridgeFile(fileName) {
     playMechanicalClick(210, 0.06);
     updateCartridgeVisuals(fileName);
@@ -297,12 +312,17 @@
         const res = await fetch(romUrl);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const bytes = new Uint8Array(await res.arrayBuffer());
-        Javatari.room.fileLoader.loadFromContent(fileName, bytes, jt.FileLoader.OPEN_TYPE.ROM, 0, true, false);
-        if (!powerOn) {
-          powerOn = true;
-          tvPowerLed?.classList.add('on');
-          el('sw-power')?.classList.add('up');
+        // altPower = false -> autoPower = true: reinicia CPU/RAM/TIA e liga o console ao inserir cartucho
+        Javatari.room.fileLoader.loadFromContent(fileName, bytes, jt.FileLoader.OPEN_TYPE.ROM, 0, false, false);
+        const c = Javatari.room.console;
+        if (c && !c.powerIsOn) c.userPowerOn();
+        if (paused && c) {
+          c.userPause(false);
+          paused = false;
+          el('btn-pause')?.classList.remove('active');
+          if (el('pause-state')) el('pause-state').textContent = tr('Rodando', 'Running');
         }
+        syncPowerUI(c ? c.powerIsOn : true);
         el('jt-screen-fs')?.focus();
         return;
       } catch (err) {
@@ -319,7 +339,10 @@
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
       if (window.Javatari?.room?.fileLoader) {
-        Javatari.room.fileLoader.loadFromContent(file.name, bytes, jt.FileLoader.OPEN_TYPE.ROM, 0, true, false);
+        Javatari.room.fileLoader.loadFromContent(file.name, bytes, jt.FileLoader.OPEN_TYPE.ROM, 0, false, false);
+        const c = Javatari.room.console;
+        if (c && !c.powerIsOn) c.userPowerOn();
+        syncPowerUI(c ? c.powerIsOn : true);
         playMechanicalClick(220, 0.06);
         updateCartridgeVisuals(file.name);
         el('jt-screen-fs')?.focus();
@@ -347,11 +370,13 @@
 
     swPower?.addEventListener('click', () => {
       playMechanicalClick(180, 0.05);
-      powerOn = !powerOn;
-      swPower.classList.toggle('up', powerOn);
-      tvPowerLed?.classList.toggle('on', powerOn);
-      el('sw-power-state').textContent = powerOn ? 'ON' : 'OFF';
-      if (window.jt?.ConsoleControls) pulseConsoleControl(jt.ConsoleControls.POWER);
+      const c = window.Javatari?.room?.console;
+      if (c && window.jt?.ConsoleControls) {
+        pulseConsoleControl(jt.ConsoleControls.POWER);
+        syncPowerUI(c.powerIsOn);
+      } else {
+        syncPowerUI(!powerOn);
+      }
       el('jt-screen-fs')?.focus();
     });
 
@@ -666,10 +691,11 @@
     wireSwitches();
     const params = new URLSearchParams(window.location.search);
     const paramUrl = params.get('CARTRIDGE_URL') || params.get('AUTODETECT_URL');
-    if (paramUrl) {
-      const cleanName = decodeURIComponent(paramUrl.split('/').pop() || 'Pitfall.bin');
-      updateCartridgeVisuals(cleanName);
-      recordRecent(cleanName);
+    let cleanParamName = paramUrl ? decodeURIComponent(paramUrl.split('/').pop() || '') : '';
+    const STALE_NTSC_UPGRADE = { 'Popeye.bin': 'Popeye 2.bin', 'Joust.bin': 'Joust 2.bin', 'Frostbite.bin': 'Frostbite 5.bin' };
+    if (cleanParamName) {
+      updateCartridgeVisuals(STALE_NTSC_UPGRADE[cleanParamName] || cleanParamName || 'Pitfall.bin');
+      recordRecent(STALE_NTSC_UPGRADE[cleanParamName] || cleanParamName);
     }
 
     try {
@@ -684,12 +710,17 @@
 
     applyLang();
 
-    // Se nenhuma ROM veio pela URL, carrega automaticamente Pitfall! assim que o Javatari inicializar
-    if (!paramUrl) {
+    // Sincroniza estado real da chave POWER do console Javatari (inclusive atalho F1 ou boot atrasado)
+    syncConsoleUiFromEmulator();
+    setInterval(syncConsoleUiFromEmulator, 250);
+
+    // Se nenhuma ROM veio pela URL (ou veio dump PAL/Problemático antigo na URL), carrega a versão NTSC verificada
+    const targetBootRom = !paramUrl ? 'Pitfall.bin' : (STALE_NTSC_UPGRADE[cleanParamName] || null);
+    if (targetBootRom) {
       const waitReady = setInterval(() => {
         if (window.Javatari?.room?.fileLoader && window.jt?.FileLoader) {
           clearInterval(waitReady);
-          loadCartridgeFile('Pitfall.bin');
+          loadCartridgeFile(targetBootRom);
         }
       }, 120);
       setTimeout(() => clearInterval(waitReady), 8000);

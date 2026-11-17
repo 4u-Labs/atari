@@ -614,36 +614,79 @@ body:not(.lamp-on) .lamp-bulb {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-#javatari-screen {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: #000;
-  border-radius: 10px;
   overflow: hidden;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-#javatari-screen > div {
+html:not(.jt-full-screen) #javatari-screen {
   width: 100% !important;
-  height: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 4 / 3 !important;
+  background: #000 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  position: relative !important;
   display: flex !important;
-  flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
-#javatari-screen canvas {
+html:not(.jt-full-screen) #jt-screen-fs,
+html:not(.jt-full-screen) #jt-screen-fs-center,
+html:not(.jt-full-screen) #jt-screen-canvas-outer {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #000 !important;
+}
+
+html:not(.jt-full-screen) #jt-screen-canvas {
+  display: block !important;
   width: 100% !important;
   height: 100% !important;
   max-width: 100% !important;
   max-height: 100% !important;
   object-fit: contain !important;
-  border-radius: 8px;
+  border-radius: 8px !important;
+}
+
+html:not(.jt-full-screen) #jt-logo {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+html:not(.jt-full-screen) #jt-logo-center {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+html:not(.jt-full-screen) #jt-logo-image {
+  width: 56% !important;
+  max-width: 260px !important;
+  height: auto !important;
+}
+
+html:not(.jt-full-screen) #jt-bar {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 40 !important;
 }
 
 /* Painel lateral direito da TV (Dials VHF/UHF + Speaker + Power) */
