@@ -50,7 +50,7 @@
   const classicMap = new Map(CLASSICS.map((c) => [c.file.toLowerCase(), c]));
   let allRoms = [];
   let activeFile = 'Pitfall.bin';
-  let activeCategory = 'classics'; // 'classics' | 'all' | 'favs' | 'recent'
+  let activeCategory = 'all'; // 'all' | 'classics' | 'favs' | 'recent'
   let searchQuery = '';
   let lang = localStorage.getItem(STORAGE_LANG) === 'en' ? 'en' : 'pt';
   let favs = new Set(JSON.parse(localStorage.getItem(STORAGE_FAV) || '[]'));
@@ -64,7 +64,9 @@
   let tvColorMode = true;
   let leftExpert = false;
   let rightExpert = false;
-  let renderLimit = 90;
+  let renderLimit = 100;
+  let currentList = [];
+  let renderedCount = 0;
 
   const tr = (pt, en) => (lang === 'en' ? en : pt);
 
@@ -164,27 +166,51 @@
     if (favs.has(file)) favs.delete(file);
     else favs.add(file);
     try { localStorage.setItem(STORAGE_FAV, JSON.stringify([...favs])); } catch {}
-    renderRack();
+    const nextFav = favs.has(file);
+    rackEl?.querySelectorAll('.cart-item').forEach((node) => {
+      if (node.dataset.file === file) {
+        const btn = node.querySelector('.cart-fav-btn');
+        if (btn) {
+          btn.classList.toggle('is-fav', nextFav);
+          btn.textContent = nextFav ? '♥' : '♡';
+        }
+      }
+    });
+    if (activeCategory === 'favs') renderRack();
     if (!catalogModal.classList.contains('hidden')) renderCatalogModal();
+  }
+
+  function getAllOrderedRoms() {
+    const byLower = new Map(allRoms.map((r) => [r.toLowerCase(), r]));
+    const first = [];
+    const used = new Set();
+    for (const c of CLASSICS) {
+      const exact = byLower.get(c.file.toLowerCase());
+      if (exact && !used.has(exact)) {
+        first.push(exact);
+        used.add(exact);
+      }
+    }
+    const rest = allRoms.filter((r) => !used.has(r));
+    return [...first, ...rest];
   }
 
   function getFilteredRoms(queryStr, cat) {
     let base;
     if (cat === 'classics') {
-      const availableSet = new Set(allRoms.map((r) => r.toLowerCase()));
-      base = CLASSICS.filter((c) => availableSet.has(c.file.toLowerCase())).map((c) => c.file);
+      const byLower = new Map(allRoms.map((r) => [r.toLowerCase(), r]));
+      base = CLASSICS.map((c) => byLower.get(c.file.toLowerCase())).filter(Boolean);
     } else if (cat === 'favs') {
       base = allRoms.filter((r) => favs.has(r));
     } else if (cat === 'recent') {
       const availableSet = new Set(allRoms);
       base = recent.filter((r) => availableSet.has(r));
     } else {
-      base = allRoms;
+      base = getAllOrderedRoms();
     }
 
     const q = (queryStr || '').trim().toLowerCase();
     if (!q) return base;
-    // Ao buscar, se estiver em favoritos/clássicos sem achar, busca na lista inteira se for aba 'all' ou mantém filtro da aba
     return base.filter((f) => {
       const meta = classicMap.get(f.toLowerCase());
       const hay = `${f} ${meta ? `${meta.title} ${meta.maker} ${meta.pt} ${meta.en}` : ''}`.toLowerCase();
@@ -216,13 +242,13 @@
 
     const row = document.createElement('div');
     row.className = 'cart-item' + (fileName === activeFile ? ' active' : '');
+    row.dataset.file = fileName;
     row.setAttribute('role', 'button');
     row.tabIndex = 0;
+    row.title = sub;
     row.innerHTML = `
-      <div class="cart-spine"><div class="cart-spine-stripe" style="background:${col}"></div></div>
-      <div class="cart-item-info">
-        <div class="cart-item-title">${title}</div>
-        <div class="cart-item-desc">${sub}</div>
+      <div class="cart-label-plate" style="background-color:${col}">
+        <span class="cart-item-title">${title}</span>
       </div>
       <button type="button" class="cart-fav-btn ${isFav ? 'is-fav' : ''}" title="${tr('Favoritar', 'Favorite')}">${isFav ? '♥' : '♡'}</button>
     `;
@@ -237,36 +263,54 @@
     return row;
   }
 
+  function appendNextCartBatch(batchSize = 100) {
+    if (!rackEl || renderedCount >= currentList.length) return;
+    const nextEnd = Math.min(currentList.length, renderedCount + batchSize);
+    const oldMore = rackEl.querySelector('.rack-more-btn');
+    if (oldMore) oldMore.remove();
+
+    const frag = document.createDocumentFragment();
+    for (let i = renderedCount; i < nextEnd; i++) {
+      frag.appendChild(createCartNode(currentList[i], false));
+    }
+    rackEl.appendChild(frag);
+    renderedCount = nextEnd;
+
+    if (currentList.length > renderedCount) {
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'mech-btn rack-more-btn';
+      more.style.width = '100%';
+      more.textContent = tr(
+        `Role ou clique para carregar mais (${currentList.length - renderedCount} restantes)...`,
+        `Scroll or click to load more (${currentList.length - renderedCount} left)...`
+      );
+      more.addEventListener('click', () => appendNextCartBatch(160));
+      rackEl.appendChild(more);
+    }
+  }
+
   function renderRack() {
     if (!rackEl) return;
     let list = getFilteredRoms(searchQuery, activeCategory);
-    // Se usuário digitou busca na aba Clássicos e não achou nos 37 clássicos, busca automaticamente nos 2146!
     if (searchQuery.trim() && list.length === 0 && activeCategory === 'classics') {
       list = getFilteredRoms(searchQuery, 'all');
     }
 
+    currentList = list;
+    renderedCount = 0;
     rackCountEl.textContent = String(list.length);
-    rackLabelEl.textContent = tr('cartuchos disponíveis', 'cartridges available');
+    rackLabelEl.textContent = tr('cartuchos instalados', 'cartridges installed');
     rackEl.innerHTML = '';
-
-    const slice = list.slice(0, renderLimit);
-    const frag = document.createDocumentFragment();
-    for (const file of slice) frag.appendChild(createCartNode(file, false));
-    rackEl.appendChild(frag);
-
-    if (list.length > slice.length) {
-      const more = document.createElement('button');
-      more.type = 'button';
-      more.className = 'mech-btn';
-      more.style.width = '100%';
-      more.textContent = tr(`Mostrar mais (${list.length - slice.length} restantes)...`, `Show more (${list.length - slice.length} left)...`);
-      more.addEventListener('click', () => {
-        renderLimit += 120;
-        renderRack();
-      });
-      rackEl.appendChild(more);
-    }
+    appendNextCartBatch(Math.max(100, renderLimit));
   }
+
+  rackEl?.addEventListener('scroll', () => {
+    if (renderedCount >= currentList.length) return;
+    if (rackEl.scrollTop + rackEl.clientHeight >= rackEl.scrollHeight - 160) {
+      appendNextCartBatch(120);
+    }
+  });
 
   function renderCatalogModal() {
     if (!catalogGrid) return;
@@ -298,7 +342,13 @@
     playMechanicalClick(210, 0.06);
     updateCartridgeVisuals(fileName);
     recordRecent(fileName);
-    renderRack();
+    if (activeCategory === 'recent') {
+      renderRack();
+    } else if (rackEl) {
+      rackEl.querySelectorAll('.cart-item').forEach((node) => {
+        node.classList.toggle('active', node.dataset.file === fileName);
+      });
+    }
 
     const romUrl = `roms/${encodeURIComponent(fileName)}`;
     try {
@@ -550,8 +600,8 @@
     pill.addEventListener('click', () => {
       document.querySelectorAll('#cart-filter-pills .rack-pill').forEach((p) => p.classList.remove('active'));
       pill.classList.add('active');
-      activeCategory = pill.dataset.cat || 'classics';
-      renderLimit = 90;
+      activeCategory = pill.dataset.cat || 'all';
+      renderLimit = 100;
       renderRack();
     });
   });
