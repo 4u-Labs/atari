@@ -1,0 +1,1305 @@
+/* Atari 2600 VCS — Mesa Retrô 4u-Labs (Estilo Bancada Realista) */
+:root {
+  --wood-1: #5a3820;
+  --wood-2: #3b2211;
+  --rosewood-1: #6b3519;
+  --rosewood-2: #3b1a09;
+  --wall-1: #3b3022;
+  --wall-2: #1f1911;
+  --console-black-1: #23252a;
+  --console-black-2: #121417;
+  --tv-bezel-1: #50321d;
+  --tv-bezel-2: #2d190c;
+  --atari-orange: #f97316;
+  --atari-amber: #f59e0b;
+  --led-red: #ef4444;
+  --led-green: #22c55e;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100vh;
+  background: #14100c;
+  color: #f4efe6;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* Fundo de quarto + luminária */
+.room-backdrop {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 200, 105, 0.24), transparent 46%),
+    linear-gradient(180deg, var(--wall-1) 0%, var(--wall-2) 64%, #140d07 100%);
+  transition: background 0.35s ease;
+}
+
+body:not(.lamp-on) .room-backdrop {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(249, 115, 22, 0.14), transparent 52%),
+    linear-gradient(180deg, #0d0f13 0%, #07080a 100%);
+}
+
+/* Topbar 4u-Labs */
+.desk-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 16px;
+  background: rgba(16, 12, 9, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  flex-wrap: wrap;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--atari-orange);
+  box-shadow: 0 0 10px var(--atari-orange);
+}
+
+.brand-title {
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  font-size: 0.9rem;
+  color: #f8f2e7;
+}
+
+.engine-badge {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.16);
+  color: #fdba74;
+  border: 1px solid rgba(249, 115, 22, 0.38);
+  font-weight: 700;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill-btn {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e5dfd5;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.pill-btn:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.pill-btn.active {
+  background: rgba(249, 115, 22, 0.22);
+  border-color: rgba(249, 115, 22, 0.55);
+  color: #ffedd5;
+}
+
+.pill-btn.home-pill {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #bbf7d0;
+}
+
+/* Mesa de Madeira */
+.desk-stage {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 14px 12px 18px;
+}
+
+.wood-desk {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  border-radius: 18px;
+  padding: 18px 18px 20px;
+  background:
+    repeating-linear-gradient(
+      92deg,
+      rgba(255, 255, 255, 0.015) 0px,
+      rgba(255, 255, 255, 0.015) 3px,
+      rgba(0, 0, 0, 0.04) 3px,
+      rgba(0, 0, 0, 0.04) 8px
+    ),
+    linear-gradient(180deg, var(--wood-1) 0%, var(--wood-2) 100%);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 235, 200, 0.22),
+    inset 0 -10px 26px rgba(0, 0, 0, 0.55),
+    0 24px 60px rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(255, 210, 150, 0.14);
+}
+
+/* Luminária de Mesa */
+.desk-lamp-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 14% 8%, rgba(255, 220, 140, 0.24), transparent 55%);
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+body:not(.lamp-on) .desk-lamp-glow {
+  opacity: 0;
+}
+
+.lamp-arm {
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  width: 56px;
+  height: 52px;
+  z-index: 4;
+  cursor: pointer;
+}
+
+.lamp-shade {
+  position: absolute;
+  top: 0;
+  left: 10px;
+  width: 44px;
+  height: 22px;
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+  border-radius: 22px 22px 6px 6px;
+  transform: rotate(22deg);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.5);
+}
+
+.lamp-bulb {
+  position: absolute;
+  top: 15px;
+  left: 26px;
+  width: 14px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fef08a;
+  box-shadow: 0 0 18px #fde047;
+  transition: opacity 0.2s;
+}
+
+body:not(.lamp-on) .lamp-bulb {
+  opacity: 0.16;
+  box-shadow: none;
+}
+
+/* Layout 3 colunas */
+.station-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 274px minmax(360px, 1fr) 256px;
+  gap: 18px;
+  align-items: start;
+}
+
+.left-peripherals,
+.right-peripherals {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.desk-card {
+  background: linear-gradient(180deg, rgba(24, 25, 30, 0.94), rgba(14, 15, 19, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 11px 12px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.52);
+}
+
+/* Slot preview esquerdo */
+.slot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.slot-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #cbd5e1;
+}
+
+.slot-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3f3f46;
+  transition: all 0.2s;
+}
+
+.slot-led.on {
+  background: var(--atari-orange);
+  box-shadow: 0 0 9px var(--atari-orange);
+}
+
+.mini-cart-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0c0d10;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.mini-cart-shell {
+  width: 44px;
+  height: 50px;
+  border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(180deg, #27292f 0%, #14161a 100%);
+  border: 1px solid #3f424a;
+  padding: 6px 4px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.1);
+}
+
+.mini-cart-grip {
+  width: 100%;
+  height: 6px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(180deg, #32353d 0 1px, #191a1f 1px 2px);
+  margin-bottom: 4px;
+}
+
+.mini-cart-sticker {
+  width: 100%;
+  flex: 1;
+  border-radius: 2px;
+  background: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.52rem;
+  font-weight: 900;
+  color: #fff;
+  text-align: center;
+  line-height: 1;
+  padding: 2px;
+}
+
+.mini-cart-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-cart-name {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-cart-sub {
+  font-size: 0.67rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.slot-btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.mech-btn {
+  background: linear-gradient(180deg, #343741, #1e2027);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.12s;
+}
+
+.mech-btn:hover {
+  background: linear-gradient(180deg, #3f4350, #272933);
+  border-color: rgba(249, 115, 22, 0.5);
+}
+
+.mech-btn.primary {
+  background: linear-gradient(180deg, #ea580c, #c2410c);
+  color: #fff;
+  border-color: rgba(255, 190, 120, 0.4);
+}
+
+/* Estante de Cartuchos */
+.rack-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.rack-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.rack-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fdba74;
+}
+
+.rack-catalog-btn {
+  background: rgba(249, 115, 22, 0.18);
+  color: #fed7aa;
+  border: 1px solid rgba(249, 115, 22, 0.42);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rack-catalog-btn:hover {
+  background: rgba(249, 115, 22, 0.3);
+}
+
+.rack-search-input {
+  width: 100%;
+  background: #0d0e12;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  padding: 6px 9px;
+  font-size: 0.76rem;
+  outline: none;
+  user-select: text;
+}
+
+.rack-search-input:focus {
+  border-color: var(--atari-orange);
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+}
+
+.rack-pills {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.rack-pill {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rack-pill.active {
+  background: rgba(249, 115, 22, 0.25);
+  color: #ffedd5;
+  border-color: rgba(249, 115, 22, 0.6);
+}
+
+.rack-stats-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.68rem;
+  color: #94a3b8;
+  padding: 2px 2px;
+}
+
+.rack-stats-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-green);
+  margin-right: 5px;
+}
+
+.cartridge-rack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 332px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.cartridge-rack::-webkit-scrollbar {
+  width: 6px;
+}
+.cartridge-rack::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 99px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: linear-gradient(180deg, #212329, #15171c);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: #e2e8f0;
+  transition: transform 0.1s, border-color 0.15s, background 0.15s;
+}
+
+.cart-item:hover {
+  border-color: rgba(249, 115, 22, 0.55);
+  transform: translateX(2px);
+}
+
+.cart-item.active {
+  background: linear-gradient(180deg, #2d2016, #1b140f);
+  border-color: var(--atari-orange);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.28);
+}
+
+.cart-spine {
+  width: 12px;
+  height: 30px;
+  border-radius: 3px;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cart-spine-stripe {
+  position: absolute;
+  inset: 3px 2px;
+  border-radius: 2px;
+}
+
+.cart-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-item-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cart-item-desc {
+  font-size: 0.64rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cart-fav-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.cart-fav-btn.is-fav {
+  color: #f43f5e;
+}
+
+/* ==================== COLUNA CENTRAL: TV CRT + CONSOLE ATARI 2600 ==================== */
+.center-station {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* TV CRT Madeira Anos 80 */
+.tv-cabinet {
+  width: 100%;
+  max-width: 590px;
+  padding: 15px 15px 12px;
+  border-radius: 18px;
+  background:
+    repeating-linear-gradient(
+      3deg,
+      rgba(255, 255, 255, 0.02) 0 2px,
+      rgba(0, 0, 0, 0.07) 2px 6px
+    ),
+    linear-gradient(180deg, var(--tv-bezel-1) 0%, var(--tv-bezel-2) 100%);
+  border: 2px solid #241308;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 220, 175, 0.22),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.6),
+    0 20px 44px rgba(0, 0, 0, 0.68);
+}
+
+.tv-inner-layout {
+  display: grid;
+  grid-template-columns: 1fr 78px;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.tv-tube-frame {
+  background: #0a0b0d;
+  border-radius: 14px;
+  padding: 10px;
+  border: 3px solid #1d1f24;
+  box-shadow:
+    inset 0 0 22px rgba(0, 0, 0, 0.95),
+    0 0 2px rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#javatari-screen {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#javatari-screen > div {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#javatari-screen canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  border-radius: 8px;
+}
+
+/* Painel lateral direito da TV (Dials VHF/UHF + Speaker + Power) */
+.tv-control-strip {
+  background: linear-gradient(180deg, #1d1f24 0%, #111216 100%);
+  border: 1px solid #353841;
+  border-radius: 10px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tv-brand-badge {
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: #cbd5e1;
+  background: #090a0c;
+  padding: 3px 6px;
+  border-radius: 3px;
+  border: 1px solid #334155;
+}
+
+.tv-dial-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.tv-dial {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #64748b, #1e293b 70%);
+  border: 2px solid #0f172a;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.tv-dial::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 3px;
+  height: 14px;
+  background: #f97316;
+  border-radius: 2px;
+  transform: translateX(-50%);
+}
+
+.tv-dial-label {
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+.tv-speaker-grille {
+  width: 54px;
+  height: 46px;
+  border-radius: 5px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      #060708 0 2px,
+      #252830 2px 5px
+    );
+  border: 1px solid #2e323c;
+}
+
+.tv-power-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.54rem;
+  font-weight: 800;
+  color: #cbd5e1;
+}
+
+.tv-power-led {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #450a0a;
+  transition: all 0.2s;
+}
+
+.tv-power-led.on {
+  background: var(--led-red);
+  box-shadow: 0 0 10px var(--led-red);
+}
+
+/* Console Atari 2600 "Woody" CX2600 realista */
+.atari-console {
+  width: 100%;
+  max-width: 590px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #272930 0%, #141519 100%);
+  border: 2px solid #090a0c;
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.14),
+    0 20px 38px rgba(0, 0, 0, 0.65);
+  padding: 10px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.console-upper-deck {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.console-ribs {
+  height: 28px;
+  border-radius: 5px;
+  background: repeating-linear-gradient(
+    180deg,
+    #111317 0 2px,
+    #2b2e36 2px 5px
+  );
+  border: 1px solid #0b0c0e;
+}
+
+/* Slot físico de Cartucho no console */
+.console-cart-well {
+  background: #08090b;
+  border: 2px solid #30333c;
+  border-radius: 8px;
+  padding: 5px 14px;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.9);
+}
+
+.console-cartridge-3d {
+  width: 158px;
+  height: 36px;
+  border-radius: 5px 5px 2px 2px;
+  background: linear-gradient(180deg, #2b2e35 0%, #14161a 100%);
+  border: 1px solid #4b4f5b;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.15);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.console-cartridge-3d.inserting {
+  transform: translateY(-10px) scale(1.03);
+}
+
+.cart3d-end-label {
+  width: 100%;
+  height: 22px;
+  border-radius: 3px;
+  background: var(--atari-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  font-size: 0.66rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Painel Frontal Jacarandá + Laranja + Chaves Prateadas */
+.console-wood-fascia {
+  border-radius: 10px;
+  padding: 12px 14px 10px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0 4px,
+      rgba(0, 0, 0, 0.08) 4px 10px
+    ),
+    linear-gradient(180deg, var(--rosewood-1) 0%, var(--rosewood-2) 100%);
+  border: 2px solid #f97316;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.55),
+    0 4px 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.console-switches-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  align-items: end;
+}
+
+.switch-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.switch-top-label {
+  font-size: 0.53rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #ffedd5;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.switch-sub-state {
+  font-size: 0.52rem;
+  font-weight: 800;
+  color: #fed7aa;
+  background: rgba(0, 0, 0, 0.52);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.silver-lever-btn {
+  width: 30px;
+  height: 44px;
+  border-radius: 6px;
+  background: #0d0e11;
+  border: 1px solid #3f434e;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+
+.silver-lever-stick {
+  width: 14px;
+  height: 22px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #9ca3af 0%, #f8fafc 45%, #6b7280 100%);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.8), inset 0 1px 1px #fff;
+  transition: transform 0.12s ease;
+  transform: translateY(-2px);
+}
+
+.silver-lever-btn.up .silver-lever-stick,
+.silver-lever-btn:active .silver-lever-stick {
+  transform: translateY(-13px);
+}
+
+.console-logo-strip {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #fed7aa;
+}
+
+/* ==================== COLUNA DIREITA: JOYSTICK CX40 + ATALHOS ==================== */
+.cx40-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.cx40-stage {
+  position: relative;
+  width: 158px;
+  height: 158px;
+  background: linear-gradient(145deg, #23252c, #111317);
+  border: 2px solid #353844;
+  border-radius: 16px;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.08),
+    0 10px 20px rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.cx40-orange-ring {
+  width: 106px;
+  height: 106px;
+  border-radius: 50%;
+  border: 3px solid var(--atari-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #181a1f 0%, #090a0c 100%);
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+
+.cx40-boot-rings {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle,
+    #1c1e24 0 5px,
+    #0c0d10 5px 9px
+  );
+  border: 1px solid #32353f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cx40-stick {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #4b5563, #111827 75%);
+  border: 2px solid #030712;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.85), inset 0 2px 3px rgba(255, 255, 255, 0.25);
+  transition: transform 0.07s ease-out;
+}
+
+.cx40-fire-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #f87171, #dc2626 65%, #7f1d1d 100%);
+  border: 2px solid #090a0c;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+
+.cx40-fire-btn.pressed,
+.cx40-fire-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 0 16px #ef4444, inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.cx40-label {
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+}
+
+.key-help-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.key-help-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.71rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-bottom: 3px;
+}
+
+.key-help-row kbd {
+  background: rgba(249, 115, 22, 0.16);
+  color: #fed7aa;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.key-help-row span {
+  color: #cbd5e1;
+  text-align: right;
+}
+
+/* Manual card */
+.manual-book-btn {
+  width: 100%;
+  text-align: left;
+  background: linear-gradient(135deg, #271a12, #17100c);
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #f8fafc;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.manual-book-btn:hover {
+  border-color: var(--atari-orange);
+}
+
+.manual-book-kicker {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #fdba74;
+  letter-spacing: 0.08em;
+}
+
+.manual-book-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.manual-book-sub {
+  font-size: 0.67rem;
+  color: #94a3b8;
+}
+
+/* Mobile Touch Controls */
+.mobile-touch-pad {
+  display: none;
+  width: 100%;
+  max-width: 590px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(18, 20, 25, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+}
+
+.touch-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(3, 44px);
+  gap: 4px;
+}
+
+.touch-pad-btn {
+  background: #272932;
+  color: #f8fafc;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 800;
+  touch-action: none;
+}
+
+.touch-pad-btn:active {
+  background: var(--atari-orange);
+}
+
+.touch-fire-big {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f87171, #dc2626);
+  border: 3px solid #090a0c;
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.78rem;
+  touch-action: none;
+}
+
+/* Modal Catálogo Visual + Manual */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 200;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 960px;
+  max-height: 88vh;
+  background: #14161b;
+  border: 1px solid rgba(249, 115, 22, 0.45);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.85);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #1c1f26;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.modal-header h2 {
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.modal-body {
+  padding: 14px 16px;
+  overflow-y: auto;
+  user-select: text;
+}
+
+.catalog-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 10px;
+}
+
+.catalog-cart-card {
+  background: linear-gradient(180deg, #21232b, #14161b);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.catalog-cart-card:hover {
+  border-color: var(--atari-orange);
+  transform: translateY(-2px);
+}
+
+.catalog-cart-label {
+  height: 44px;
+  border-radius: 5px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.catalog-cart-sub {
+  font-size: 0.66rem;
+  color: #94a3b8;
+}
+
+/* Rodapé Ecossistema 4u-Labs */
+.eco-footer {
+  margin-top: auto;
+  padding: 9px 18px;
+  background: rgba(11, 9, 7, 0.94);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.71rem;
+  color: #94a3b8;
+}
+
+.eco-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.eco-footer-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+}
+
+.eco-footer-links a:hover {
+  color: #fdba74;
+}
+
+@media (max-width: 1080px) {
+  .station-grid {
+    grid-template-columns: 1fr;
+  }
+  .left-peripherals {
+    order: 2;
+  }
+  .center-station {
+    order: 1;
+  }
+  .right-peripherals {
+    order: 3;
+  }
+  .mobile-touch-pad {
+    display: flex;
+  }
+}
+
+@media (max-width: 600px) {
+  .tv-inner-layout {
+    grid-template-columns: 1fr;
+  }
+  .tv-control-strip {
+    flex-direction: row;
+    padding: 6px 10px;
+  }
+  .tv-speaker-grille {
+    display: none;
+  }
+  .console-switches-row {
+    gap: 5px;
+  }
+  .silver-lever-btn {
+    width: 26px;
+    height: 38px;
+  }
+}
