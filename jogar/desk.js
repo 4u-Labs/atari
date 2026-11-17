@@ -139,10 +139,7 @@
     const meta = classicMap.get(fileName.toLowerCase());
 
     if (topCartBadge) topCartBadge.textContent = `ATARI 2600 • ${title}`;
-    if (miniCartSticker) {
-      miniCartSticker.style.background = col;
-      miniCartSticker.textContent = title.slice(0, 12);
-    }
+    if (miniCartSticker) miniCartSticker.style.backgroundColor = col;
     if (miniCartName) miniCartName.textContent = title;
     if (miniCartSub) miniCartSub.textContent = meta ? meta.maker : 'Atari 2600 ROM (.BIN)';
     if (consoleCartLabel) {
@@ -413,8 +410,6 @@
   function wireSwitches() {
     const swPower = el('sw-power');
     const swTv = el('sw-tv');
-    const swDiffL = el('sw-diffl');
-    const swDiffR = el('sw-diffr');
     const swSelect = el('sw-select');
     const swReset = el('sw-reset');
 
@@ -436,24 +431,6 @@
       swTv.classList.toggle('up', tvColorMode);
       el('sw-tv-state').textContent = tvColorMode ? tr('COR', 'COLOR') : tr('P&B', 'B/W');
       if (window.jt?.ConsoleControls) pulseConsoleControl(jt.ConsoleControls.BLACK_WHITE);
-      el('jt-screen-fs')?.focus();
-    });
-
-    swDiffL?.addEventListener('click', () => {
-      playMechanicalClick(280, 0.04);
-      leftExpert = !leftExpert;
-      swDiffL.classList.toggle('up', leftExpert);
-      el('sw-diffl-state').textContent = leftExpert ? 'A (PRO)' : 'B';
-      if (window.jt?.ConsoleControls) pulseConsoleControl(jt.ConsoleControls.DIFFICULTY0);
-      el('jt-screen-fs')?.focus();
-    });
-
-    swDiffR?.addEventListener('click', () => {
-      playMechanicalClick(280, 0.04);
-      rightExpert = !rightExpert;
-      swDiffR.classList.toggle('up', rightExpert);
-      el('sw-diffr-state').textContent = rightExpert ? 'A (PRO)' : 'B';
-      if (window.jt?.ConsoleControls) pulseConsoleControl(jt.ConsoleControls.DIFFICULTY1);
       el('jt-screen-fs')?.focus();
     });
 
@@ -541,13 +518,6 @@
     el('jt-screen-fs')?.focus();
   }
 
-  el('btn-lamp')?.addEventListener('click', () => {
-    const on = document.body.classList.toggle('lamp-on');
-    el('btn-lamp').classList.toggle('active', on);
-    el('lamp-state').textContent = on ? tr('Acesa', 'On') : tr('Apagada', 'Off');
-    playMechanicalClick(440, 0.03);
-  });
-  el('lamp-arm')?.addEventListener('click', () => el('btn-lamp')?.click());
   el('btn-crt')?.addEventListener('click', toggleCrt);
   tvDialCrt?.addEventListener('click', toggleCrt);
   el('btn-filter')?.addEventListener('click', toggleFilter);
@@ -714,7 +684,6 @@
   // Bilíngue PT / EN
   function applyLang() {
     el('btn-lang').textContent = lang === 'en' ? '🇺🇸 EN' : '🇧🇷 PT';
-    if (el('lamp-state')) el('lamp-state').textContent = document.body.classList.contains('lamp-on') ? tr('Acesa', 'On') : tr('Apagada', 'Off');
     if (el('pause-state')) el('pause-state').textContent = paused ? tr('Pausado', 'Paused') : tr('Rodando', 'Running');
     if (el('rack-title')) el('rack-title').textContent = tr('CARTUCHOS ATARI 2600', 'ATARI 2600 CARTRIDGES');
     if (searchInput) searchInput.placeholder = tr('🔍 Buscar nos 2.146 jogos...', '🔍 Search 2,146 games...');
