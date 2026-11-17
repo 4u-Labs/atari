@@ -67,6 +67,8 @@
   let renderLimit = 100;
   let currentList = [];
   let renderedCount = 0;
+  let catalogList = [];
+  let catalogRendered = 0;
 
   const tr = (pt, en) => (lang === 'en' ? en : pt);
 
@@ -309,15 +311,54 @@
     }
   });
 
+  function appendNextCatalogBatch(batchSize = 120) {
+    if (!catalogGrid || catalogRendered >= catalogList.length) return;
+    const nextEnd = Math.min(catalogList.length, catalogRendered + batchSize);
+    catalogGrid.querySelector('.catalog-more-btn')?.remove();
+
+    const frag = document.createDocumentFragment();
+    for (let i = catalogRendered; i < nextEnd; i++) {
+      frag.appendChild(createCartNode(catalogList[i], true));
+    }
+    catalogGrid.appendChild(frag);
+    catalogRendered = nextEnd;
+
+    if (catalogList.length > catalogRendered) {
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'mech-btn catalog-more-btn';
+      more.style.gridColumn = '1 / -1';
+      more.textContent = tr(
+        `Role ou clique para carregar mais (${catalogList.length - catalogRendered} restantes)...`,
+        `Scroll or click to load more (${catalogList.length - catalogRendered} left)...`
+      );
+      more.addEventListener('click', () => appendNextCatalogBatch(240));
+      catalogGrid.appendChild(more);
+    }
+  }
+
   function renderCatalogModal() {
     if (!catalogGrid) return;
     const q = catalogSearch?.value || '';
-    const list = q.trim() ? getFilteredRoms(q, 'all') : getFilteredRoms('', activeCategory === 'classics' ? 'classics' : 'all');
+    catalogList = getFilteredRoms(q, 'all');
+    catalogRendered = 0;
+
+    const countEl = el('catalog-count-badge');
+    if (countEl) {
+      countEl.textContent = `${catalogList.length} ${tr('cartuchos', 'cartridges')}`;
+    }
+
     catalogGrid.innerHTML = '';
-    const frag = document.createDocumentFragment();
-    for (const file of list.slice(0, 120)) frag.appendChild(createCartNode(file, true));
-    catalogGrid.appendChild(frag);
+    appendNextCatalogBatch(140);
   }
+
+  catalogGrid?.parentElement?.addEventListener('scroll', () => {
+    const body = catalogGrid.parentElement;
+    if (!body || catalogRendered >= catalogList.length) return;
+    if (body.scrollTop + body.clientHeight >= body.scrollHeight - 220) {
+      appendNextCatalogBatch(160);
+    }
+  });
 
   // Carregamento instantâneo sem recarregar a página via Javatari.room.fileLoader
   function syncPowerUI(isOn) {
