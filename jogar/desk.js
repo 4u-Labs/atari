@@ -128,6 +128,9 @@
   const cx40Stick = el('cx40-stick');
   const cx40Fire = el('cx40-fire-btn');
   const cx40Stage = el('cx40-stage');
+  const mobileCx40Stick = el('mobile-cx40-stick');
+  const mobileCx40Stage = el('mobile-cx40-stage');
+  const mobileFireBtns = document.querySelectorAll('.touch-fire-big');
   const catalogModal = el('catalog-modal');
   const catalogGrid = el('catalog-grid');
   const catalogSearch = el('catalog-search-input');
@@ -617,19 +620,20 @@
     });
   });
 
-  // Joystick CX40 animado em tempo real (Teclado + Mouse/Touch)
+  // Joystick CX40 animado em tempo real (Teclado + Mouse/Touch Desktop e Mobile)
   const joyHeld = new Set();
   function updateCx40Stick() {
-    if (!cx40Stick) return;
     let dx = 0;
     let dy = 0;
     if (joyHeld.has('ArrowLeft') || joyHeld.has('KeyA') || joyHeld.has('L')) dx -= 1;
     if (joyHeld.has('ArrowRight') || joyHeld.has('KeyD') || joyHeld.has('R')) dx += 1;
     if (joyHeld.has('ArrowUp') || joyHeld.has('KeyW') || joyHeld.has('U')) dy -= 1;
     if (joyHeld.has('ArrowDown') || joyHeld.has('KeyS') || joyHeld.has('D')) dy += 1;
-    cx40Stick.style.transform = `translate(${dx * 15}px, ${dy * 15}px)`;
+    if (cx40Stick) cx40Stick.style.transform = `translate(${dx * 15}px, ${dy * 15}px)`;
+    if (mobileCx40Stick) mobileCx40Stick.style.transform = `translate(${dx * 13}px, ${dy * 13}px)`;
     const firing = joyHeld.has('Space') || joyHeld.has('KeyZ') || joyHeld.has('AltLeft') || joyHeld.has('FIRE');
     cx40Fire?.classList.toggle('pressed', firing);
+    mobileFireBtns.forEach((b) => b.classList.toggle('pressed', firing));
   }
 
   window.addEventListener('keydown', (e) => {
@@ -651,18 +655,23 @@
     updateCx40Stick();
   });
 
-  // Botão vermelho CX40 & Mobile D-pad interativos
+  // Botão vermelho CX40 & controles móveis interativos (multi-touch isolado por pointerId)
   const bindJoyControl = (btn, jtCtrlName, visualKey) => {
     if (!btn) return;
+    let activePid = null;
     const onDown = (e) => {
       e.preventDefault();
+      activePid = e.pointerId;
+      try { btn.setPointerCapture?.(e.pointerId); } catch {}
       joyHeld.add(visualKey);
       updateCx40Stick();
       if (window.jt?.ConsoleControls && window.Javatari?.room?.consoleControls) {
         Javatari.room.consoleControls.processControlState(jt.ConsoleControls[jtCtrlName], true);
       }
     };
-    const onUp = () => {
+    const onUp = (e) => {
+      if (activePid !== null && e.pointerId !== activePid) return;
+      activePid = null;
       joyHeld.delete(visualKey);
       updateCx40Stick();
       if (window.jt?.ConsoleControls && window.Javatari?.room?.consoleControls) {
@@ -671,8 +680,8 @@
     };
     btn.addEventListener('pointerdown', onDown);
     btn.addEventListener('pointerup', onUp);
-    btn.addEventListener('pointerleave', onUp);
     btn.addEventListener('pointercancel', onUp);
+    btn.addEventListener('lostpointercapture', onUp);
   };
 
   bindJoyControl(cx40Fire, 'JOY0_BUTTON', 'FIRE');
@@ -680,15 +689,16 @@
     bindJoyControl(btn, btn.dataset.joyCtrl, btn.dataset.joyVis || btn.dataset.joyCtrl);
   });
 
-  // Drag simples no joystick CX40 (desktop/tablet)
-  if (cx40Stage) {
-    let dragging = false;
+  // Drag/Touch realista no joystick CX40 (desktop + celular multi-touch)
+  function bindStickStage(stageEl, deadzone = 12) {
+    if (!stageEl) return;
+    let activePointerId = null;
     const setDirs = (dx, dy) => {
       const want = new Set();
-      if (dx < -14) want.add('JOY0_LEFT');
-      if (dx > 14) want.add('JOY0_RIGHT');
-      if (dy < -14) want.add('JOY0_UP');
-      if (dy > 14) want.add('JOY0_DOWN');
+      if (dx < -deadzone) want.add('JOY0_LEFT');
+      if (dx > deadzone) want.add('JOY0_RIGHT');
+      if (dy < -deadzone) want.add('JOY0_UP');
+      if (dy > deadzone) want.add('JOY0_DOWN');
       ['L', 'R', 'U', 'D'].forEach((k) => joyHeld.delete(k));
       if (want.has('JOY0_LEFT')) joyHeld.add('L');
       if (want.has('JOY0_RIGHT')) joyHeld.add('R');
@@ -701,26 +711,34 @@
         }
       }
     };
-    cx40Stage.addEventListener('pointerdown', (e) => {
+    const updateFromEvent = (e) => {
+      const rect = stageEl.getBoundingClientRect();
+      setDirs(e.clientX - (rect.left + rect.width / 2), e.clientY - (rect.top + rect.height / 2));
+    };
+    stageEl.addEventListener('pointerdown', (e) => {
       if (e.target === cx40Fire) return;
-      dragging = true;
-      cx40Stage.setPointerCapture?.(e.pointerId);
-      const rect = cx40Stage.getBoundingClientRect();
-      setDirs(e.clientX - (rect.left + rect.width / 2), e.clientY - (rect.top + rect.height / 2));
+      e.preventDefault();
+      activePointerId = e.pointerId;
+      try { stageEl.setPointerCapture?.(e.pointerId); } catch {}
+      updateFromEvent(e);
     });
-    cx40Stage.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      const rect = cx40Stage.getBoundingClientRect();
-      setDirs(e.clientX - (rect.left + rect.width / 2), e.clientY - (rect.top + rect.height / 2));
+    stageEl.addEventListener('pointermove', (e) => {
+      if (activePointerId !== e.pointerId) return;
+      e.preventDefault();
+      updateFromEvent(e);
     });
-    const endDrag = () => {
-      if (!dragging) return;
-      dragging = false;
+    const endDrag = (e) => {
+      if (activePointerId !== e.pointerId) return;
+      activePointerId = null;
       setDirs(0, 0);
     };
-    cx40Stage.addEventListener('pointerup', endDrag);
-    cx40Stage.addEventListener('pointercancel', endDrag);
+    stageEl.addEventListener('pointerup', endDrag);
+    stageEl.addEventListener('pointercancel', endDrag);
+    stageEl.addEventListener('lostpointercapture', endDrag);
   }
+
+  bindStickStage(cx40Stage, 14);
+  bindStickStage(mobileCx40Stage, 10);
 
   // Bilíngue PT / EN completo (toda a UI, modais, tooltips e manual)
   function applyLang() {

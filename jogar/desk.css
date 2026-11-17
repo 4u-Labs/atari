@@ -188,6 +188,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
 .desk-card {
@@ -196,6 +197,7 @@ html, body {
   border-radius: 12px;
   padding: 11px 12px;
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.52);
+  min-width: 0;
 }
 
 /* Slot preview esquerdo */
@@ -548,6 +550,7 @@ html, body {
 /* ==================== COLUNA CENTRAL: TV CRT + CONSOLE ATARI 2600 ==================== */
 .center-station {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1192,51 +1195,95 @@ html:not(.jt-full-screen) #jt-bar {
   color: #1c1917;
 }
 
-/* Mobile Touch Controls */
+/* Mobile Touch Controls Realistas (Joystick Atari CX40 + Botão Fire) */
 .mobile-touch-pad {
   display: none;
   width: 100%;
   max-width: 590px;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: rgba(18, 20, 25, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  gap: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(22, 24, 30, 0.96), rgba(12, 13, 17, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.58);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.touch-dpad {
-  display: grid;
-  grid-template-columns: repeat(3, 44px);
-  grid-template-rows: repeat(3, 44px);
-  gap: 4px;
+.mobile-cx40-wrap,
+.mobile-fire-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
 }
 
-.touch-pad-btn {
-  background: #272932;
-  color: #f8fafc;
-  border: 1px solid #475569;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 800;
+.mobile-cx40-stage {
+  width: 126px;
+  height: 126px;
+  border-radius: 16px;
   touch-action: none;
 }
 
-.touch-pad-btn:active {
-  background: var(--atari-orange);
+.mobile-cx40-ring {
+  width: 96px;
+  height: 96px;
+}
+
+.mobile-cx40-boot {
+  width: 66px;
+  height: 66px;
+}
+
+.mobile-cx40-stick {
+  width: 28px;
+  height: 28px;
+}
+
+.mobile-mid-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 78px;
+}
+
+.mobile-mid-actions .mech-btn {
+  padding: 8px 9px;
+  font-size: 0.72rem;
+  touch-action: manipulation;
+}
+
+.mobile-pad-sub {
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
 }
 
 .touch-fire-big {
   width: 78px;
   height: 78px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #f87171, #dc2626);
+  background: radial-gradient(circle at 35% 30%, #f87171, #dc2626 65%, #7f1d1d 100%);
   border: 3px solid #090a0c;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.78),
+    inset 0 2px 3px rgba(255, 255, 255, 0.28);
   color: #fff;
   font-weight: 900;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
   touch-action: none;
+  cursor: pointer;
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+
+.touch-fire-big.pressed,
+.touch-fire-big:active {
+  transform: scale(0.92);
+  box-shadow: 0 0 18px #ef4444, inset 0 3px 6px rgba(0, 0, 0, 0.65);
 }
 
 /* Modal Catálogo Visual + Manual */
@@ -1381,7 +1428,7 @@ html:not(.jt-full-screen) #jt-bar {
 
 @media (max-width: 1080px) {
   .station-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .tv-cabinet,
   .atari-console {
@@ -1399,27 +1446,111 @@ html:not(.jt-full-screen) #jt-bar {
   .right-peripherals {
     order: 3;
   }
+  .cx40-card,
+  .desk-only-card {
+    display: none;
+  }
   .mobile-touch-pad {
     display: flex;
+  }
+  html:not(.jt-full-screen) #jt-bar {
+    display: none !important;
   }
 }
 
 @media (max-width: 600px) {
+  .desk-stage {
+    padding: 4px;
+  }
+  .wood-desk {
+    max-width: 100%;
+    padding: 8px 6px;
+    border-radius: 12px;
+  }
+  .tv-cabinet {
+    padding: 8px;
+    border-radius: 12px;
+  }
+  .tv-tube-frame {
+    padding: 6px;
+    border-radius: 10px;
+  }
   .tv-inner-layout {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
   .tv-control-strip {
     flex-direction: row;
-    padding: 6px 10px;
+    padding: 6px 8px;
+    gap: 8px;
+  }
+  .tv-brand-badge {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+  }
+  .tv-brand-logo {
+    width: 64px;
+  }
+  .tv-dial {
+    width: 32px;
+    height: 32px;
   }
   .tv-speaker-grille {
     display: none;
   }
+  .atari-console {
+    padding: 6px 8px 7px;
+    border-radius: 12px;
+  }
+  .console-upper-deck {
+    gap: 6px;
+  }
+  .console-cart-well {
+    min-width: 0;
+    padding: 3px 6px;
+  }
+  .console-cartridge-3d {
+    width: 126px;
+    height: 24px;
+  }
+  .console-wood-fascia {
+    padding: 6px 8px;
+  }
   .console-switches-row {
-    gap: 5px;
+    gap: 6px;
+  }
+  .switch-top-label {
+    font-size: 0.48rem;
   }
   .silver-lever-btn {
     width: 26px;
     height: 38px;
+  }
+  .mobile-touch-pad {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .mobile-cx40-stage {
+    width: 114px;
+    height: 114px;
+  }
+  .mobile-cx40-ring {
+    width: 88px;
+    height: 88px;
+  }
+  .mobile-cx40-boot {
+    width: 60px;
+    height: 60px;
+  }
+  .mobile-cx40-stick {
+    width: 26px;
+    height: 26px;
+  }
+  .touch-fire-big {
+    width: 72px;
+    height: 72px;
+    font-size: 0.78rem;
   }
 }
