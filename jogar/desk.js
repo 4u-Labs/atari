@@ -371,11 +371,72 @@
     if (el('sw-power-state')) el('sw-power-state').textContent = powerOn ? 'ON' : 'OFF';
   }
 
+  // Inicia/reinicia a partida acionando GAME RESET no hardware emulado (evita ficar no modo Demo de 1 vida)
+  let riverWaitTicks = 0;
+  function startMatchWithReset(fileName = activeFile) {
+    const room = window.Javatari?.room;
+    const c = room?.console;
+    const cc = room?.consoleControls;
+    const jc = window.jt?.ConsoleControls;
+    if (!room || !c || !cc || !jc) return;
+
+    if (!c.powerIsOn) c.userPowerOn();
+    if (paused) {
+      c.userPause(false);
+      paused = false;
+      el('btn-pause')?.classList.remove('active');
+      if (el('pause-state')) el('pause-state').textContent = tr('Rodando', 'Running');
+    }
+    if (cc.isP1ControlsMode?.()) cc.setP1ControlsMode(false);
+    cc.releaseControllers?.();
+    syncPowerUI(true);
+
+    try {
+      room.runFramesAtTopSpeed?.(6);
+      cc.processControlState(jc.RESET, true);
+      room.runFramesAtTopSpeed?.(6);
+      cc.processControlState(jc.RESET, false);
+      const isRiverRaid = /^river raid/i.test(fileName || '');
+      room.runFramesAtTopSpeed?.(isRiverRaid ? 85 : 16);
+      if (isRiverRaid) {
+        // Decola o 1º avião já com as 3 vidas reservas ativas no painel
+        cc.processControlState(jc.JOY0_BUTTON, true);
+        room.runFramesAtTopSpeed?.(5);
+        cc.processControlState(jc.JOY0_BUTTON, false);
+      }
+      riverWaitTicks = 0;
+    } catch {}
+  }
+
   function syncConsoleUiFromEmulator() {
     const c = window.Javatari?.room?.console;
     if (!c) return;
     if (typeof c.powerIsOn === 'boolean' && c.powerIsOn !== powerOn) {
       syncPowerUI(c.powerIsOn);
+    }
+    // No River Raid, garante que nunca fique no modo Demo (0 vidas) e que o novo avião decole ao renascer
+    if (powerOn && !paused && /^river raid(?! ii)/i.test(activeFile || '')) {
+      try {
+        const b64 = c.saveState?.()?.r?.b;
+        if (b64) {
+          const ramStr = atob(b64);
+          const livesByte = ramStr.charCodeAt(64); // $C0
+          const stateByte = ramStr.charCodeAt(70); // $C6
+          if (livesByte === 0) {
+            startMatchWithReset(activeFile);
+          } else if (stateByte === 0x30 && livesByte !== 0x58) {
+            riverWaitTicks++;
+            if (riverWaitTicks >= 2 && window.jt?.ConsoleControls) {
+              riverWaitTicks = 0;
+              pulseConsoleControl(jt.ConsoleControls.JOY0_BUTTON, 70);
+            }
+          } else {
+            riverWaitTicks = 0;
+          }
+        }
+      } catch {}
+    } else {
+      riverWaitTicks = 0;
     }
   }
 
@@ -405,15 +466,7 @@
         const bytes = new Uint8Array(await res.arrayBuffer());
         // altPower = false -> autoPower = true: reinicia CPU/RAM/TIA e liga o console ao inserir cartucho
         Javatari.room.fileLoader.loadFromContent(fileName, bytes, jt.FileLoader.OPEN_TYPE.ROM, 0, false, false);
-        const c = Javatari.room.console;
-        if (c && !c.powerIsOn) c.userPowerOn();
-        if (paused && c) {
-          c.userPause(false);
-          paused = false;
-          el('btn-pause')?.classList.remove('active');
-          if (el('pause-state')) el('pause-state').textContent = tr('Rodando', 'Running');
-        }
-        syncPowerUI(c ? c.powerIsOn : true);
+        startMatchWithReset(fileName);
         el('jt-screen-fs')?.focus();
         return;
       } catch (err) {
@@ -431,11 +484,9 @@
       const bytes = new Uint8Array(await file.arrayBuffer());
       if (window.Javatari?.room?.fileLoader) {
         Javatari.room.fileLoader.loadFromContent(file.name, bytes, jt.FileLoader.OPEN_TYPE.ROM, 0, false, false);
-        const c = Javatari.room.console;
-        if (c && !c.powerIsOn) c.userPowerOn();
-        syncPowerUI(c ? c.powerIsOn : true);
         playMechanicalClick(220, 0.06);
         updateCartridgeVisuals(file.name);
+        startMatchWithReset(file.name);
         el('jt-screen-fs')?.focus();
       }
     } catch {}
@@ -484,13 +535,17 @@
         ev.preventDefault();
         playMechanicalClick(240, 0.05);
         btn.classList.add('up');
+        if (ctrlName === 'RESET') {
+          startMatchWithReset(activeFile);
+          return;
+        }
         if (window.Javatari?.room?.consoleControls && window.jt?.ConsoleControls) {
           Javatari.room.consoleControls.processControlState(jt.ConsoleControls[ctrlName], true);
         }
       };
       const release = () => {
         btn.classList.remove('up');
-        if (window.Javatari?.room?.consoleControls && window.jt?.ConsoleControls) {
+        if (ctrlName !== 'RESET' && window.Javatari?.room?.consoleControls && window.jt?.ConsoleControls) {
           Javatari.room.consoleControls.processControlState(jt.ConsoleControls[ctrlName], false);
         }
         el('jt-screen-fs')?.focus();
@@ -507,7 +562,7 @@
     // Botões extras de Reset/Select no painel direito
     el('btn-quick-reset')?.addEventListener('click', () => {
       playMechanicalClick(240, 0.05);
-      if (window.jt?.ConsoleControls) pulseConsoleControl(jt.ConsoleControls.RESET, 90);
+      startMatchWithReset(activeFile);
       el('jt-screen-fs')?.focus();
     });
     el('btn-quick-select')?.addEventListener('click', () => {
@@ -620,36 +675,99 @@
     });
   });
 
-  // Joystick CX40 animado em tempo real (Teclado + Mouse/Touch Desktop e Mobile)
+  // Joystick CX40 animado em tempo real + ponte direta para o emulador (Teclado + Mouse/Touch Desktop e Mobile)
   const joyHeld = new Set();
+  const prevJoySent = { L: false, R: false, U: false, D: false, FIRE: false };
+
   function updateCx40Stick() {
     let dx = 0;
     let dy = 0;
-    if (joyHeld.has('ArrowLeft') || joyHeld.has('KeyA') || joyHeld.has('L')) dx -= 1;
-    if (joyHeld.has('ArrowRight') || joyHeld.has('KeyD') || joyHeld.has('R')) dx += 1;
-    if (joyHeld.has('ArrowUp') || joyHeld.has('KeyW') || joyHeld.has('U')) dy -= 1;
-    if (joyHeld.has('ArrowDown') || joyHeld.has('KeyS') || joyHeld.has('D')) dy += 1;
+    const left = joyHeld.has('ArrowLeft') || joyHeld.has('KeyA') || joyHeld.has('L');
+    const right = joyHeld.has('ArrowRight') || joyHeld.has('KeyD') || joyHeld.has('R');
+    const up = joyHeld.has('ArrowUp') || joyHeld.has('KeyW') || joyHeld.has('U');
+    const down = joyHeld.has('ArrowDown') || joyHeld.has('KeyS') || joyHeld.has('D');
+    const firing = joyHeld.has('Space') || joyHeld.has('KeyZ') || joyHeld.has('AltLeft') || joyHeld.has('Enter') || joyHeld.has('FIRE');
+
+    if (left) dx -= 1;
+    if (right) dx += 1;
+    if (up) dy -= 1;
+    if (down) dy += 1;
     if (cx40Stick) cx40Stick.style.transform = `translate(${dx * 15}px, ${dy * 15}px)`;
     if (mobileCx40Stick) mobileCx40Stick.style.transform = `translate(${dx * 13}px, ${dy * 13}px)`;
-    const firing = joyHeld.has('Space') || joyHeld.has('KeyZ') || joyHeld.has('AltLeft') || joyHeld.has('FIRE');
     cx40Fire?.classList.toggle('pressed', firing);
     mobileFireBtns.forEach((b) => b.classList.toggle('pressed', firing));
+
+    if (window.jt?.ConsoleControls && window.Javatari?.room?.consoleControls) {
+      const cc = Javatari.room.consoleControls;
+      const jc = jt.ConsoleControls;
+      if (left !== prevJoySent.L) { prevJoySent.L = left; cc.processControlState(jc.JOY0_LEFT, left); }
+      if (right !== prevJoySent.R) { prevJoySent.R = right; cc.processControlState(jc.JOY0_RIGHT, right); }
+      if (up !== prevJoySent.U) { prevJoySent.U = up; cc.processControlState(jc.JOY0_UP, up); }
+      if (down !== prevJoySent.D) { prevJoySent.D = down; cc.processControlState(jc.JOY0_DOWN, down); }
+      if (firing !== prevJoySent.FIRE) { prevJoySent.FIRE = firing; cc.processControlState(jc.JOY0_BUTTON, firing); }
+    }
   }
+
+  const GAME_KEY_CODES = new Set([
+    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+    'KeyW', 'KeyA', 'KeyS', 'KeyD',
+    'Space', 'KeyZ', 'AltLeft', 'Enter'
+  ]);
 
   window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'KeyZ', 'AltLeft'].includes(e.code)) {
-      joyHeld.add(e.code);
-      updateCx40Stick();
-    }
     if (e.code === 'Escape') {
       catalogModal?.classList.add('hidden');
       manualModal?.classList.add('hidden');
+      return;
     }
-  });
+    if (!e.ctrlKey && !e.metaKey) {
+      if (e.code === 'F1') {
+        e.preventDefault();
+        e.stopPropagation();
+        el('sw-reset')?.classList.add('up');
+        startMatchWithReset(activeFile);
+        return;
+      }
+      if (e.code === 'F2') {
+        e.preventDefault();
+        e.stopPropagation();
+        el('sw-select')?.classList.add('up');
+        if (window.jt?.ConsoleControls) pulseConsoleControl(jt.ConsoleControls.SELECT, 90);
+        return;
+      }
+      if (e.code === 'KeyP' && !e.altKey && !e.repeat) {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePause();
+        return;
+      }
+      if (GAME_KEY_CODES.has(e.code)) {
+        e.preventDefault();
+        e.stopPropagation();
+        joyHeld.add(e.code);
+        updateCx40Stick();
+      }
+    }
+  }, true);
+
   window.addEventListener('keyup', (e) => {
-    if (joyHeld.delete(e.code)) updateCx40Stick();
-  });
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (e.code === 'F1') {
+      el('sw-reset')?.classList.remove('up');
+      return;
+    }
+    if (e.code === 'F2') {
+      el('sw-select')?.classList.remove('up');
+      return;
+    }
+    if (GAME_KEY_CODES.has(e.code)) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (joyHeld.delete(e.code)) updateCx40Stick();
+    }
+  }, true);
+
   window.addEventListener('blur', () => {
     joyHeld.clear();
     updateCx40Stick();
@@ -663,18 +781,24 @@
       e.preventDefault();
       activePid = e.pointerId;
       try { btn.setPointerCapture?.(e.pointerId); } catch {}
+      if (jtCtrlName === 'RESET') {
+        playMechanicalClick(240, 0.05);
+        startMatchWithReset(activeFile);
+        return;
+      }
       joyHeld.add(visualKey);
       updateCx40Stick();
-      if (window.jt?.ConsoleControls && window.Javatari?.room?.consoleControls) {
+      if (jtCtrlName !== 'JOY0_BUTTON' && window.jt?.ConsoleControls && window.Javatari?.room?.consoleControls) {
         Javatari.room.consoleControls.processControlState(jt.ConsoleControls[jtCtrlName], true);
       }
     };
     const onUp = (e) => {
       if (activePid !== null && e.pointerId !== activePid) return;
       activePid = null;
+      if (jtCtrlName === 'RESET') return;
       joyHeld.delete(visualKey);
       updateCx40Stick();
-      if (window.jt?.ConsoleControls && window.Javatari?.room?.consoleControls) {
+      if (jtCtrlName !== 'JOY0_BUTTON' && window.jt?.ConsoleControls && window.Javatari?.room?.consoleControls) {
         Javatari.room.consoleControls.processControlState(jt.ConsoleControls[jtCtrlName], false);
       }
     };
@@ -694,22 +818,12 @@
     if (!stageEl) return;
     let activePointerId = null;
     const setDirs = (dx, dy) => {
-      const want = new Set();
-      if (dx < -deadzone) want.add('JOY0_LEFT');
-      if (dx > deadzone) want.add('JOY0_RIGHT');
-      if (dy < -deadzone) want.add('JOY0_UP');
-      if (dy > deadzone) want.add('JOY0_DOWN');
       ['L', 'R', 'U', 'D'].forEach((k) => joyHeld.delete(k));
-      if (want.has('JOY0_LEFT')) joyHeld.add('L');
-      if (want.has('JOY0_RIGHT')) joyHeld.add('R');
-      if (want.has('JOY0_UP')) joyHeld.add('U');
-      if (want.has('JOY0_DOWN')) joyHeld.add('D');
+      if (dx < -deadzone) joyHeld.add('L');
+      if (dx > deadzone) joyHeld.add('R');
+      if (dy < -deadzone) joyHeld.add('U');
+      if (dy > deadzone) joyHeld.add('D');
       updateCx40Stick();
-      if (window.jt?.ConsoleControls && window.Javatari?.room?.consoleControls) {
-        for (const c of ['JOY0_LEFT', 'JOY0_RIGHT', 'JOY0_UP', 'JOY0_DOWN']) {
-          Javatari.room.consoleControls.processControlState(jt.ConsoleControls[c], want.has(c));
-        }
-      }
     };
     const updateFromEvent = (e) => {
       const rect = stageEl.getBoundingClientRect();
@@ -836,17 +950,15 @@
     syncConsoleUiFromEmulator();
     setInterval(syncConsoleUiFromEmulator, 250);
 
-    // Se nenhuma ROM veio pela URL (ou veio dump PAL/Problemático antigo na URL), carrega a versão NTSC verificada
-    const targetBootRom = !paramUrl ? 'Pitfall.bin' : (STALE_NTSC_UPGRADE[cleanParamName] || null);
-    if (targetBootRom) {
-      const waitReady = setInterval(() => {
-        if (window.Javatari?.room?.fileLoader && window.jt?.FileLoader) {
-          clearInterval(waitReady);
-          loadCartridgeFile(targetBootRom);
-        }
-      }, 120);
-      setTimeout(() => clearInterval(waitReady), 8000);
-    }
+    // Carrega e inicia automaticamente a ROM com GAME RESET ativo (3 vidas)
+    const targetBootRom = STALE_NTSC_UPGRADE[cleanParamName] || cleanParamName || 'Pitfall.bin';
+    const waitReady = setInterval(() => {
+      if (window.Javatari?.room?.fileLoader && window.jt?.FileLoader) {
+        clearInterval(waitReady);
+        loadCartridgeFile(targetBootRom);
+      }
+    }, 120);
+    setTimeout(() => clearInterval(waitReady), 8000);
   }
 
   if (document.readyState === 'loading') {
